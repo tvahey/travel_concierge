@@ -44,32 +44,8 @@ st.set_page_config(
 )
 
 
-def display_confidential_banner():
-    """Display confidential beta banner on all pages."""
-    st.markdown("""
-        <style>
-        .confidential-banner {
-            background: linear-gradient(90deg, #ff4b4b, #ff6b6b);
-            color: white;
-            padding: 8px 16px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 14px;
-            letter-spacing: 2px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        </style>
-        <div class="confidential-banner">
-            CONFIDENTIAL - BETA
-        </div>
-    """, unsafe_allow_html=True)
-
-
 def display_login_page():
     """Display login and registration forms."""
-    display_confidential_banner()
     st.title("✈️ Travel Concierge Agent")
     st.caption("Your personalized travel assistant with long-term memory")
 
@@ -645,7 +621,6 @@ def display_chat():
 
 def display_main_app():
     """Display the main app (after authentication)."""
-    display_confidential_banner()
     st.title("✈️ Travel Concierge Agent")
     st.caption("Your personalized travel assistant with long-term memory")
 
