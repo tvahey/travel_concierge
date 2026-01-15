@@ -347,6 +347,7 @@ Guidelines:
 - Never invent prices, availability, or policies—use tools or state uncertainty.
 - Do not repeat sensitive PII; only request what is required.
 - Track multi-step itineraries and unresolved decisions.
+- When a date is provided without a year, assume the current year.
 """
 
 
