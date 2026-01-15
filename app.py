@@ -46,6 +46,7 @@ st.set_page_config(
 
 def display_login_page():
     """Display login and registration forms."""
+    st.warning("**CONFIDENTIAL - BETA**", icon="🔒")
     st.title("✈️ Travel Concierge Agent")
     st.caption("Your personalized travel assistant with long-term memory")
 
@@ -621,6 +622,7 @@ def display_chat():
 
 def display_main_app():
     """Display the main app (after authentication)."""
+    st.warning("**CONFIDENTIAL - BETA**", icon="🔒")
     st.title("✈️ Travel Concierge Agent")
     st.caption("Your personalized travel assistant with long-term memory")
 
