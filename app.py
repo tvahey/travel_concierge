@@ -68,8 +68,6 @@ def display_login_page():
                 else:
                     st.error("Invalid username or password")
 
-        st.caption("Default: admin / admin")
-
     with tab2:
         st.subheader("Create Account")
         with st.form("register_form"):
