@@ -334,9 +334,11 @@ Safety:
 </memory_policy>
 """
 
-BASE_INSTRUCTIONS = """
+BASE_INSTRUCTIONS_TEMPLATE = """
 You are a concise, reliable travel concierge.
 Help users plan and book flights, hotels, and car/travel insurance.
+
+Today's date is: {current_date}
 
 Guidelines:
 - Collect key trip details and confirm understanding.
@@ -347,7 +349,7 @@ Guidelines:
 - Never invent prices, availability, or policies—use tools or state uncertainty.
 - Do not repeat sensitive PII; only request what is required.
 - Track multi-step itineraries and unresolved decisions.
-- When a date is provided without a year, assume the current year.
+- When a date is provided without a year, assume the current year ({current_year}).
 """
 
 
@@ -381,7 +383,14 @@ class MemoryHooks(AgentHooks[TravelState]):
 
 async def build_instructions(ctx: RunContextWrapper[TravelState], agent: Agent) -> str:
     """Build dynamic instructions with memory injection."""
+    from datetime import datetime
+
     s = ctx.context
+
+    # Get current date for the instructions
+    now = datetime.now()
+    current_date = now.strftime("%B %d, %Y")  # e.g., "January 15, 2026"
+    current_year = now.year
 
     if s.inject_session_memories_next_turn and not s.session_memories_md:
         s.session_memories_md = render_session_memories_md(
@@ -397,8 +406,14 @@ async def build_instructions(ctx: RunContextWrapper[TravelState], agent: Agent) 
         s.inject_session_memories_next_turn = False
         s.session_memories_md = ""
 
+    # Format the base instructions with current date
+    base_instructions = BASE_INSTRUCTIONS_TEMPLATE.format(
+        current_date=current_date,
+        current_year=current_year
+    )
+
     return (
-        BASE_INSTRUCTIONS
+        base_instructions
         + "\n\n<user_profile>\n" + (s.system_frontmatter or "") + "\n</user_profile>"
         + "\n\n<memories>\n"
         + "GLOBAL memory:\n" + (s.global_memories_md or "- (none)")
