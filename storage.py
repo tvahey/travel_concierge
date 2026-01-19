@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Optional
 
 from state import TravelState, get_default_user_state
+from auth import get_default_user_profile
 
 DATA_DIR = Path(__file__).parent / "data"
 
@@ -31,6 +32,16 @@ def load_user_state(user_id: str) -> TravelState:
 
     # Create default state for new users
     state = get_default_user_state()
+
+    # Apply user-specific defaults if available
+    user_defaults = get_default_user_profile(user_id)
+    if user_defaults:
+        state.profile["name"] = user_defaults.get("display_name", state.profile.get("name", ""))
+        state.profile["home_city"] = user_defaults.get("home_city", state.profile.get("home_city", ""))
+        if "flight_preferences" not in state.profile:
+            state.profile["flight_preferences"] = {}
+        state.profile["flight_preferences"]["home_airport"] = user_defaults.get("home_airport", "")
+
     save_user_state(user_id, state)
     return state
 

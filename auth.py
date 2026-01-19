@@ -164,10 +164,56 @@ def list_users() -> list[str]:
     return list(users.keys())
 
 
-# Create a default admin user if no users exist
+# Try to load users from Streamlit secrets, fall back to local defaults
+def _get_default_users() -> list:
+    """Get default users from Streamlit secrets or fallback to local config."""
+    try:
+        import streamlit as st
+        if hasattr(st, 'secrets') and 'users' in st.secrets:
+            # Convert from Streamlit secrets format to list of dicts
+            return [dict(user) for user in st.secrets['users']]
+    except Exception:
+        pass
+
+    # Fallback for local development (or if secrets not configured)
+    # You can keep a minimal admin user here for local testing
+    return [
+        {
+            "username": "admin",
+            "password": "admin",
+            "display_name": "Administrator",
+            "home_airport": "SFO",
+            "home_city": "San Francisco",
+        },
+    ]
+
+
+# Load users (cached at module level)
+DEFAULT_USERS = _get_default_users()
+
+
+def get_default_user_profile(username: str) -> dict:
+    """Get the default profile for a user if they're in the default users list."""
+    for user in DEFAULT_USERS:
+        if user["username"].lower() == username.lower():
+            return {
+                "home_airport": user.get("home_airport", ""),
+                "home_city": user.get("home_city", ""),
+                "display_name": user.get("display_name", ""),
+            }
+    return {}
+
+
 def ensure_default_user():
-    """Create a default user if none exist."""
+    """Create default users if they don't exist."""
     users = _load_users()
-    if not users:
-        create_user("admin", "admin", "Administrator")
-        logger.info("Default admin user created (username: admin, password: admin)")
+
+    for default_user in DEFAULT_USERS:
+        username = default_user["username"].lower()
+        if username not in users:
+            create_user(
+                default_user["username"],
+                default_user["password"],
+                default_user["display_name"]
+            )
+            logger.info(f"Default user created: {default_user['username']}")
